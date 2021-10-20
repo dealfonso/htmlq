@@ -38,6 +38,24 @@ Or even do more sophisticated queries than remove internal elements, empty value
 $ htmlq -u "https://www.ebay.com/sch/i.html?_nkw=laptop"  "li.s-item h3.s-item__title" -s "\n" --rm span -a . -n
 ```
 
+## Installing
+
+Install using `python-pip`:
+
+```
+$ pip install htmlq
+```
+
+or building from source:
+
+```
+$ pip install bs4 html5lib urllib3 requests pathlib
+...
+$ git clone https://github.com/dealfonso/htmlq.git
+$ cd htmlq
+$ python3 setup.py install
+```
+
 ## Use Cases
 
 The most simple way to use `htmlq` is to get a tag from a web page:

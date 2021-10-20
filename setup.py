@@ -18,11 +18,10 @@ setup(
   author_email = 'caralla@upv.es',  # Type in your E-Mail
   url = 'https://github.com/dealfonso/htmlq',   # Provide either the link to your github or to your website
   #download_url = 'https://github.com/user/reponame/archive/v_011.tar.gz',
-  keywords = ['html', 'command line', 'htmlquery', 'jquery'],   # Keywords that define your package best
+  keywords = ['html', 'command line', 'htmlquery', 'jquery', 'url' ],   # Keywords that define your package best
   install_requires=[           
-          'beautifulsoup4',
+          'bs4',
           'html5lib',
-          'argparse',
           'urllib3',
           'requests',
           'pathlib'

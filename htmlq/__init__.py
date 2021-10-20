@@ -1,15 +1,16 @@
-from bs4 import BeautifulSoup as Soup
 import sys
-import requests
-import urllib3
 import argparse
-from urllib.parse import urlparse
 from .version import VERSION
 import string, random
 import re
 
 # This function tryes different methods to download the web page
 def gethtml(url, headers = None, retry = True):
+
+    # Delay importing libraries
+    import urllib3
+    import requests
+
     urllib3.disable_warnings()
     try:
         if headers is None:
@@ -62,6 +63,9 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
 
 # The main function for urlf command
 def urlf():
+    # Delay importing libraries
+    from urllib.parse import urlparse
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-U", "--url", action="append_const", const="%U", dest="format", help="the input url as is")
@@ -105,6 +109,7 @@ def urlf():
         urls = args.urls
 
     result = []
+    
     for url in urls:
         url=url.strip()
         parsed = urlparse(url)
@@ -145,6 +150,10 @@ def urlf():
 
 # The main function for htmlq command
 def htmlq():
+
+    # Delay importing libraries
+    from bs4 import BeautifulSoup as Soup
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--filename", action="store", dest="filename", default=None, help="file to read (default: stdin)")
     parser.add_argument("-u", "--url", action="store", dest="url", default=None, help="url to parse (it will be downloaded and queried); it is incompatible with the use of a file")
