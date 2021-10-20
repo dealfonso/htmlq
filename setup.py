@@ -4,11 +4,12 @@ import pathlib
 HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
+from htmlq.version import VERSION
 
 setup(
   name = 'htmlq',             # How you named your package folder
   packages = ['htmlq'],   
-  version = '0.1.2',          # Start with a small number and increase it with every change you make
+  version = VERSION,          # Start with a small number and increase it with every change you make
   license='Apache 2.0',       # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description = 'Script that enables querying an html input (file or url) as using jquery selector strings',
   long_description = README,
@@ -35,6 +36,9 @@ setup(
     'Programming Language :: Python :: 3',      # Specify which pyhton versions that you want to support
   ],
   entry_points = {
-    'console_scripts' : [ 'htmlq=htmlq:main']
+    'console_scripts' : [ 
+      'htmlq=htmlq:htmlq',
+      'urlf=htmlq:urlf'
+    ]
   }
 )

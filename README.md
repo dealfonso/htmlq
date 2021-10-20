@@ -155,3 +155,140 @@ There are multiple options and flags for `htmlq` and here we try to explain each
 - __-U | --user-agent \<user agent string\>__. Using this parameter, it is possible to set an arbitraty user agent string to retrieve the web page. You can check your user agent string in this web: https://www.whatsmyua.info
 
 - __query__. This is the query string that wants to be retrieved from the html web page. It is possible to use queries that retrieve multiple trees. In this case, `htmlq` will consider them as individual entries and will deal with all of them (or only the first if using flag `-1`).
+
+# urlf - format url
+
+This command is an add-on to _htmlq_, as a command line application to deal with URLs and extracting information about them. 
+
+The original purpose was to extract the values of variables in URLs, so that their values can be used in scripts. An example:
+
+```console
+$ urlf -v oq "https://www.google.com/search?q=github&oq=github&sourceid=chrome&ie=UTF-8"
+github
+```
+
+_(*) This example gets the value of var **oq**._
+
+Then the application has evolved to enable rewritting URLs, using the commandline as in the next example:
+
+```console
+$ urlf "https://www.google.com/search\?q=github&oq=github&sourceid=chrome&ie=UTF-8" -F "%s://%H?oq=%#oq#"
+https://www.google.com?oq=github
+```
+
+_(*) This example rewrites the URL to build a new one that removes the path and just includes the value of var **oq**._
+
+## Detailed options
+
+There are multiple options and flags for `urlf` and here we try to explain each of them.
+
+```console
+usage: urlf [-h] [-U] [-s] [-u] [-w] [-H] [-p] [-P] [-q] [-m] [-f] [-v var name] [-j SEPARATOR] [-F format string] [-V] urls [urls ...]
+```
+
+- __-h, --help__: shows the help
+- __-V, --version__: show program's version number and exit
+- __-U, --url__: displays the URL as provided in the input.
+- __-s, --scheme__: shows the scheme provided in the url (e.g. https)
+- __-u, --username__: shows the username to accede to the url (i.e. user in https://user@pass:myserver.com)
+- __-w, --password__: shows the password to accede to the url (i.e. pass in https://user@pass:myserver.com)
+- __-H, --hostname__: shows the hostname in the url (i.e. myserver.com in https://myserver.com/my/path)
+- __-p, --port__: shows the port in the url (i.e. 443 in https://myserver.com:443/my/path)
+- __-P, --path__: shows the path in the url (i.e. my/path in https://myserver.com/my/path)
+- __-q, --query__: shows the query in the url (i.e. q=1&r=2 in https://myserver.com/my/path?q=1&r=2)
+- __-m, --parameters__: shows the parameters to accede to the url (i.e. param in https://myserver.com/my/path;param?q=1&r=2)
+- __-f, --fragment__: shows the fragment in the url (i.e. sec1 in https://myserver.com/my/path#sec1)
+- __-v var name, --var var name
+                        show the value of a var in the query string (this parameter may appear multiple times, to get the values of multiple variables; they will appear in the same order than appeared in the commandline)
+- __-j | --join-string \<SEPARATOR\>__: 
+                        character (or string) used to separate the different fields (default: <blank space>)
+- __-F | --format-string \<format string\>__: 
+                        user defined format string to get a custom output of the URL parts. Any arbitrary field or character may appear in this string, and the fields are substituted using the letter in the shorthand flag of each parameter, preceded by symbol %. E.g. `urlf -H` is the same than `urlf -F "%H"`; e.g. `urlf -s -H` is the same than `urlf -F "%s%H"`, but you can use `urlf -F "%s://%H"` to obtain a better output. In the case of variables, the value is obtained by surrounding the name of the var by symbol # and prepending symbol %; e.g. `urlf -v q` is the same than `urlf -F "%#q#"`.
+
+# A combined example (guessing wordpress version)
+In case that we wanted to get the version of a wordpress installation, we could check meta tag and get the content:
+
+```
+$ htmlq -u www.grycap.upv.es 'meta[name="generator"]'
+<meta content="WordPress 5.8.1" name="generator"/>
+$ htmlq -u www.grycap.upv.es 'meta[name="generator"]' -a content
+WordPress 5.8.1
+```
+
+But many plugins hide the version in the tag, so we can try to guess the version from the links:
+
+```
+$ htmlq -u www.grycap.upv.es 'link[href*="?ver="]' -s '\n'
+<link href="https://www.grycap.upv.es/wp-includes/css/dist/block-library/style.min.css?ver=5.8.1" id="wp-block-library-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://www.grycap.upv.es/wp-content/themes/specia/style.css?ver=5.8.1" id="specia-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://www.grycap.upv.es/wp-content/themes/specia/css/colors/default.css?ver=5.8.1" id="specia-default-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://www.grycap.upv.es/wp-content/themes/specia/css/owl.carousel.css?ver=5.8.1" id="owl-carousel-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://www.grycap.upv.es/wp-content/themes/specia/css/bootstrap.css?ver=5.8.1" id="bootstrap-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://www.grycap.upv.es/wp-content/themes/specia/css/woo.css?ver=5.8.1" id="woo-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://www.grycap.upv.es/wp-content/themes/specia/css/form.css?ver=5.8.1" id="specia-form-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://www.grycap.upv.es/wp-content/themes/specia/css/typography.css?ver=5.8.1" id="specia-typography-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://www.grycap.upv.es/wp-content/themes/specia/css/media-query.css?ver=5.8.1" id="specia-media-query-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://www.grycap.upv.es/wp-content/themes/specia/css/widget.css?ver=5.8.1" id="specia-widget-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://www.grycap.upv.es/wp-content/themes/specia/css/animate.min.css?ver=5.8.1" id="animate-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://www.grycap.upv.es/wp-content/themes/specia/css/text-rotator.css?ver=5.8.1" id="specia-text-rotator-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://www.grycap.upv.es/wp-content/themes/specia/css/menus.css?ver=5.8.1" id="specia-menus-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://www.grycap.upv.es/wp-content/themes/specia/inc/fonts/font-awesome/css/font-awesome.min.css?ver=5.8.1" id="font-awesome-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://www.grycap.upv.es/wp-content/plugins/forget-about-shortcode-buttons/public/css/button-styles.css?ver=2.1.2" id="forget-about-shortcode-buttons-css" media="all" rel="stylesheet" type="text/css"/>
+```
+
+From the links, we see that wordpress includes the version of wordpress in the "ver" variable for any link; so we may get the value of such variable using `urlf`:
+
+```
+$ htmlq -u www.grycap.upv.es 'link[href*="?ver="]' -s '\n' -a href | ./urlf.py -v ver -
+5.8.1
+5.8.1
+5.8.1
+5.8.1
+5.8.1
+5.8.1
+5.8.1
+5.8.1
+5.8.1
+5.8.1
+5.8.1
+5.8.1
+5.8.1
+5.8.1
+2.1.2
+5.8.1
+```
+
+And now, if we get the most used value, it will probably be the one that refers to the wordpress version (because other plugins may also use that variable for its purposes):
+
+```
+$ htmlq -u www.grycap.upv.es 'link[href*="?ver="]' -s '\n' -a href | ./urlf.py -v ver - | sort | uniq -c | sort -k1 -n -r
+  15 5.8.1
+   1 2.1.2
+```
+
+And the first one will be the most voted version.
+
+Now we can compare to the currently available wordpress version:
+
+```
+$ curl -s https://api.wordpress.org/core/version-check/1.7/ | jq ".offers[].version" | tr -d '"' | sort -V | tail -n 1
+5.8.1
+```
+
+Our final script would be something like the next one:
+
+```bash
+#!/bin/bash
+MYVERSION="$(htmlq -u www.grycap.upv.es 'link[href*="?ver="]' -s '\n' -a href | ./urlf.py -v ver - | sort | uniq -c | sort -k1 -n -r | head -n 1 | awk '{print $2}')"
+CURRENTVERSION="$(curl -s https://api.wordpress.org/core/version-check/1.7/ | jq ".offers[].version" | tr -d '"' | sort -V | tail -n 1)"
+
+LATESTVERSION="$(echo "$MYVERSION
+$CURRENTVERSION" | sort -V -r | head -n 1)"
+if [ "$LATESTVERSION" = "$MYVERSION" ]; then
+        echo "you have the latest version of wordpress ($LATESTVERSION)"
+else
+        echo "you should update your wordpress version"
+        exit 1
+fi
+exit 0
+```
